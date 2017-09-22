@@ -42,7 +42,6 @@ class GlibConan(ConanFile):
                                           '--without-pcre',
                                           '--disable-fam',
                                           '--prefix=%s/%s' % (self.build_folder, self.build_dir)])
-                autotools.make()
                 autotools.make(args=['install'])
 
             shutil.move('glib/.libs/libglib-2.0.0.dylib', 'glib/.libs/libglib.dylib')
