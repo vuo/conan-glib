@@ -46,11 +46,18 @@ class GlibConan(ConanFile):
 
             shutil.move('glib/.libs/libglib-2.0.0.dylib', 'glib/.libs/libglib.dylib')
             self.run('install_name_tool -id @rpath/libglib.dylib glib/.libs/libglib.dylib')
+            tools.replace_in_file('glib-2.0.pc',
+                                  'prefix=%s/%s' % (self.build_folder, self.build_dir),
+                                  'prefix=%s' % self.package_folder)
+            tools.replace_in_file('glib-2.0.pc',
+                                  '-lglib-2.0',
+                                  '-lglib')
  
     def package(self):
         self.copy('*.h', src='%s/include/glib-2.0' % self.build_dir, dst='include')
         self.copy('*.h', src='%s/glib' % self.build_dir, dst='include')
         self.copy('libglib.dylib', src='%s/glib/.libs' % self.build_dir, dst='lib')
+        self.copy('glib-2.0.pc', src=self.build_dir, dst='', keep_path=False)
 
     def package_info(self):
         self.cpp_info.libs = ['glib']
