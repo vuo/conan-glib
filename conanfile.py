@@ -4,20 +4,24 @@ import os
 
 class GlibConan(ConanFile):
     name = 'glib'
-    version = '2.51.1'
+
+    sourceVersion = '2.51.1'
+    vuoPackageVersion = '2'
+    version = '%s-%s' % (sourceVersion, vuoPackageVersion)
+
     requires = 'libffi/3.0.11@vuo/stable', \
                'gettext/0.19.8.1@vuo/stable'
     settings = 'os', 'compiler', 'build_type', 'arch'
     url = 'https://github.com/vuo/conan-glib'
     license = 'https://developer.gnome.org/glib/stable/glib.html'
     description = 'Core application building blocks for GNOME libraries and applications'
-    source_dir = 'glib-%s' % version
+    source_dir = 'glib-%s' % sourceVersion
     build_dir = '_build'
 
     def source(self):
         # glib is only available as .xz, but Conan's `tools.get` doesn't yet support that archive format.
         # https://github.com/conan-io/conan/issues/52
-        url = 'https://download.gnome.org/sources/glib/2.51/glib-%s.tar.xz' % self.version
+        url = 'https://download.gnome.org/sources/glib/2.51/glib-%s.tar.xz' % self.sourceVersion
         filename = os.path.basename(url)
         tools.download(url, filename)
         tools.check_sha256(filename, '1f8e40cde43ac0bcf61defb147326d038310d75d4e50f728f6becfd2a36ac0ac')
@@ -25,7 +29,7 @@ class GlibConan(ConanFile):
         os.unlink(filename)
 
     def imports(self):
-        self.copy('*.dylib', '', 'lib')
+        self.copy('*.dylib', self.build_dir, 'lib')
 
     def build(self):
         tools.mkdir(self.build_dir)
@@ -33,7 +37,8 @@ class GlibConan(ConanFile):
             autotools = AutoToolsBuildEnvironment(self)
             autotools.flags.append('-Oz')
             autotools.flags.append('-mmacosx-version-min=10.8')
-            autotools.link_flags.append('-Wl,-rpath,%s' % self.build_folder)
+            autotools.link_flags.append('-Wl,-rpath,@loader_path')
+            autotools.link_flags.append('-Wl,-rpath,@loader_path/../..')
 
             env_vars = {'PKG_CONFIG_PATH': self.deps_cpp_info["libffi"].rootpath}
             with tools.environment_append(env_vars):
