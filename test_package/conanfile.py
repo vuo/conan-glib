@@ -4,7 +4,7 @@ class GlibTestConan(ConanFile):
     generators = 'qbs'
 
     def build(self):
-        self.run('qbs -f "%s"' % self.conanfile_directory);
+        self.run('qbs -f "%s"' % self.source_folder)
 
     def imports(self):
         self.copy('*.dylib', dst='bin', src='lib')
