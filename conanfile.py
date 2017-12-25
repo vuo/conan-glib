@@ -5,9 +5,9 @@ import os
 class GlibConan(ConanFile):
     name = 'glib'
 
-    sourceVersion = '2.51.1'
-    vuoPackageVersion = '2'
-    version = '%s-%s' % (sourceVersion, vuoPackageVersion)
+    source_version = '2.51.1'
+    package_version = '3'
+    version = '%s-%s' % (source_version, package_version)
 
     requires = 'libffi/3.0.11@vuo/stable', \
                'gettext/0.19.8.1@vuo/stable'
@@ -15,13 +15,13 @@ class GlibConan(ConanFile):
     url = 'https://github.com/vuo/conan-glib'
     license = 'https://developer.gnome.org/glib/stable/glib.html'
     description = 'Core application building blocks for GNOME libraries and applications'
-    source_dir = 'glib-%s' % sourceVersion
+    source_dir = 'glib-%s' % source_version
     build_dir = '_build'
 
     def source(self):
         # glib is only available as .xz, but Conan's `tools.get` doesn't yet support that archive format.
         # https://github.com/conan-io/conan/issues/52
-        url = 'https://download.gnome.org/sources/glib/2.51/glib-%s.tar.xz' % self.sourceVersion
+        url = 'https://download.gnome.org/sources/glib/2.51/glib-%s.tar.xz' % self.source_version
         filename = os.path.basename(url)
         tools.download(url, filename)
         tools.check_sha256(filename, '1f8e40cde43ac0bcf61defb147326d038310d75d4e50f728f6becfd2a36ac0ac')
@@ -36,7 +36,7 @@ class GlibConan(ConanFile):
         with tools.chdir(self.build_dir):
             autotools = AutoToolsBuildEnvironment(self)
             autotools.flags.append('-Oz')
-            autotools.flags.append('-mmacosx-version-min=10.8')
+            autotools.flags.append('-mmacosx-version-min=10.10')
             autotools.link_flags.append('-Wl,-rpath,@loader_path')
             autotools.link_flags.append('-Wl,-rpath,@loader_path/../..')
 
