@@ -9,8 +9,8 @@ class GlibConan(ConanFile):
     package_version = '3'
     version = '%s-%s' % (source_version, package_version)
 
-    requires = 'libffi/3.0.11@vuo/stable', \
-               'gettext/0.19.8.1@vuo/stable'
+    requires = 'libffi/3.0.11-2@vuo/stable', \
+               'gettext/0.19.8.1-2@vuo/stable'
     settings = 'os', 'compiler', 'build_type', 'arch'
     url = 'https://github.com/vuo/conan-glib'
     license = 'https://developer.gnome.org/glib/stable/glib.html'
