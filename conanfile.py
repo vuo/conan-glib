@@ -46,6 +46,10 @@ class GlibConan(ConanFile):
         with tools.chdir(self.build_dir):
             autotools = AutoToolsBuildEnvironment(self)
 
+            # The LLVM/Clang libs get automatically added by the `requires` line,
+            # but this package doesn't need to link with them.
+            autotools.libs = ['c++abi']
+
             autotools.flags.append('-Oz')
 
             if platform.system() == 'Darwin':
