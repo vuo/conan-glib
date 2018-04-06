@@ -74,10 +74,9 @@ class GlibConan(ConanFile):
                 shutil.move('glib/.libs/libglib-2.0.0.dylib', 'glib/.libs/libglib.dylib')
                 self.run('install_name_tool -id @rpath/libglib.dylib glib/.libs/libglib.dylib')
             elif platform.system() == 'Linux':
-                self.run('ls -lR')
-                shutil.move('glib/.libs/libglib-2.0.0.so', 'glib/.libs/libglib.so')
+                shutil.move('lib/libglib-2.0.so.0.5101.0', 'lib/libglib.so')
                 patchelf = self.deps_cpp_info['patchelf'].rootpath + '/bin/patchelf'
-                self.run('%s --set-soname libglib.so glib/.libs/libglib.so' % patchelf)
+                self.run('%s --set-soname libglib.so lib/libglib.so' % patchelf)
 
             tools.replace_in_file('glib-2.0.pc',
                                   'prefix=%s/%s' % (self.build_folder, self.build_dir),
@@ -97,6 +96,7 @@ class GlibConan(ConanFile):
         self.copy('*.h', src='%s/include/glib-2.0' % self.build_dir, dst='include')
         self.copy('*.h', src='%s/glib' % self.build_dir, dst='include')
         self.copy('libglib.%s' % libext, src='%s/glib/.libs' % self.build_dir, dst='lib')
+        self.copy('libglib.%s' % libext, src='%s/lib' % self.build_dir, dst='lib')
         self.copy('glib-2.0.pc', src=self.build_dir, dst='', keep_path=False)
 
         self.copy('%s.txt' % self.name, src=self.source_dir, dst='license')
