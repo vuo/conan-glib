@@ -23,7 +23,7 @@ matrix:
 before_install:
     - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
              brew update &> /dev/null
-          && travis_wait brew install --force-bottle conan qbs yasm
+          && travis_wait brew install --force-bottle conan gettext qbs
           && conan config install https://vuo.org/sites/default/files/conan-macos.zip
       ; fi
     - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
