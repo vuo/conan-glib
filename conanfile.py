@@ -28,6 +28,8 @@ class GlibConan(ConanFile):
         self.run('tar xf "%s"' % filename)
         os.unlink(filename)
 
+        self.run('mv %s/COPYING %s/%s.txt' % (self.source_dir, self.source_dir, self.name))
+
     def imports(self):
         self.copy('*.dylib', self.build_dir, 'lib')
 
@@ -63,6 +65,8 @@ class GlibConan(ConanFile):
         self.copy('*.h', src='%s/glib' % self.build_dir, dst='include')
         self.copy('libglib.dylib', src='%s/glib/.libs' % self.build_dir, dst='lib')
         self.copy('glib-2.0.pc', src=self.build_dir, dst='', keep_path=False)
+
+        self.copy('%s.txt' % self.name, src=self.source_dir, dst='license')
 
     def package_info(self):
         self.cpp_info.libs = ['glib']
