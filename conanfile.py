@@ -6,7 +6,7 @@ class GlibConan(ConanFile):
     name = 'glib'
 
     source_version = '2.51.1'
-    package_version = '3'
+    package_version = '4'
     version = '%s-%s' % (source_version, package_version)
 
     requires = 'libffi/3.0.11-2@vuo/stable', \
