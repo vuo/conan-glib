@@ -37,7 +37,9 @@ class GlibConan(ConanFile):
         self.run('tar xf "%s"' % filename)
         os.unlink(filename)
 
-        tools.patch(patch_file='cocoa-compatibility.patch', base_path=self.source_dir)
+        tools.replace_in_file('%s/configure' % self.source_dir,
+                              '  glib_have_cocoa=yes',
+                              '  glib_have_cocoa=no')
 
         self.run('mv %s/COPYING %s/%s.txt' % (self.source_dir, self.source_dir, self.name))
 
@@ -57,7 +59,6 @@ class GlibConan(ConanFile):
 
             if platform.system() == 'Darwin':
                 autotools.flags.append('-mmacosx-version-min=10.10')
-                autotools.flags.append('-isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk')
                 autotools.link_flags.append('-Wl,-rpath,@loader_path')
                 autotools.link_flags.append('-Wl,-rpath,@loader_path/../..')
 
