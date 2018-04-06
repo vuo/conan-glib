@@ -19,6 +19,7 @@ class GlibConan(ConanFile):
     description = 'Core application building blocks for GNOME libraries and applications'
     source_dir = 'glib-%s' % source_version
     build_dir = '_build'
+    exports_sources = '*.patch'
 
     def requirements(self):
         if platform.system() == 'Linux':
@@ -35,6 +36,8 @@ class GlibConan(ConanFile):
         tools.check_sha256(filename, '1f8e40cde43ac0bcf61defb147326d038310d75d4e50f728f6becfd2a36ac0ac')
         self.run('tar xf "%s"' % filename)
         os.unlink(filename)
+
+        tools.patch(patch_file='cocoa-compatibility.patch', base_path=self.source_dir)
 
         self.run('mv %s/COPYING %s/%s.txt' % (self.source_dir, self.source_dir, self.name))
 
@@ -54,6 +57,7 @@ class GlibConan(ConanFile):
 
             if platform.system() == 'Darwin':
                 autotools.flags.append('-mmacosx-version-min=10.10')
+                autotools.flags.append('-isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk')
                 autotools.link_flags.append('-Wl,-rpath,@loader_path')
                 autotools.link_flags.append('-Wl,-rpath,@loader_path/../..')
 
@@ -64,7 +68,7 @@ class GlibConan(ConanFile):
             }
             with tools.environment_append(env_vars):
                 autotools.configure(configure_dir='../%s' % self.source_dir,
-                                    args=[#'--quiet',
+                                    args=['--quiet',
                                           '--without-pcre',
                                           '--disable-fam',
                                           '--prefix=%s/%s' % (self.build_folder, self.build_dir)])
