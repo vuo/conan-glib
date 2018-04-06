@@ -10,14 +10,20 @@ class GlibConan(ConanFile):
     version = '%s-%s' % (source_version, package_version)
 
     build_requires = 'llvm/3.3-5@vuo/stable'
-    requires = 'libffi/3.0.11-2@vuo/stable', \
-               'gettext/0.19.8.1-2@vuo/stable'
+    requires = 'libffi/3.0.11-3@vuo/stable', \
+               'gettext/0.19.8.1-3@vuo/stable'
     settings = 'os', 'compiler', 'build_type', 'arch'
     url = 'https://github.com/vuo/conan-glib'
     license = 'https://developer.gnome.org/glib/stable/glib.html'
     description = 'Core application building blocks for GNOME libraries and applications'
     source_dir = 'glib-%s' % source_version
     build_dir = '_build'
+
+    def requirements(self):
+        if platform.system() == 'Linux':
+            self.requires('patchelf/0.10pre-1@vuo/stable')
+        elif platform.system() != 'Darwin':
+            raise Exception('Unknown platform "%s"' % platform.system())
 
     def source(self):
         # glib is only available as .xz, but Conan's `tools.get` doesn't yet support that archive format.
@@ -32,16 +38,19 @@ class GlibConan(ConanFile):
         self.run('mv %s/COPYING %s/%s.txt' % (self.source_dir, self.source_dir, self.name))
 
     def imports(self):
-        self.copy('*.dylib', self.build_dir, 'lib')
+        self.copy('*', self.build_dir, 'lib')
 
     def build(self):
         tools.mkdir(self.build_dir)
         with tools.chdir(self.build_dir):
             autotools = AutoToolsBuildEnvironment(self)
+
             autotools.flags.append('-Oz')
-            autotools.flags.append('-mmacosx-version-min=10.10')
-            autotools.link_flags.append('-Wl,-rpath,@loader_path')
-            autotools.link_flags.append('-Wl,-rpath,@loader_path/../..')
+
+            if platform.system() == 'Darwin':
+                autotools.flags.append('-mmacosx-version-min=10.10')
+                autotools.link_flags.append('-Wl,-rpath,@loader_path')
+                autotools.link_flags.append('-Wl,-rpath,@loader_path/../..')
 
             env_vars = {
                 'CC' : self.deps_cpp_info['llvm'].rootpath + '/bin/clang',
@@ -56,8 +65,14 @@ class GlibConan(ConanFile):
                                           '--prefix=%s/%s' % (self.build_folder, self.build_dir)])
                 autotools.make(args=['install'])
 
-            shutil.move('glib/.libs/libglib-2.0.0.dylib', 'glib/.libs/libglib.dylib')
-            self.run('install_name_tool -id @rpath/libglib.dylib glib/.libs/libglib.dylib')
+            if platform.system() == 'Darwin':
+                shutil.move('glib/.libs/libglib-2.0.0.dylib', 'glib/.libs/libglib.dylib')
+                self.run('install_name_tool -id @rpath/libglib.dylib glib/.libs/libglib.dylib')
+            elif platform.system() == 'Linux':
+                shutil.move('glib/.libs/libglib-2.0.0.so', 'glib/.libs/libglib.so')
+                patchelf = self.deps_cpp_info['patchelf'].rootpath + '/bin/patchelf'
+                self.run('%s --set-soname libglib.so glib/.libs/libglib.so' % patchelf)
+
             tools.replace_in_file('glib-2.0.pc',
                                   'prefix=%s/%s' % (self.build_folder, self.build_dir),
                                   'prefix=%s' % self.package_folder)
@@ -66,9 +81,16 @@ class GlibConan(ConanFile):
                                   '-lglib')
  
     def package(self):
+        if platform.system() == 'Darwin':
+            libext = 'dylib'
+        elif platform.system() == 'Linux':
+            libext = 'so'
+        else:
+            raise Exception('Unknown platform "%s"' % platform.system())
+
         self.copy('*.h', src='%s/include/glib-2.0' % self.build_dir, dst='include')
         self.copy('*.h', src='%s/glib' % self.build_dir, dst='include')
-        self.copy('libglib.dylib', src='%s/glib/.libs' % self.build_dir, dst='lib')
+        self.copy('libglib.%s' % libext, src='%s/glib/.libs' % self.build_dir, dst='lib')
         self.copy('glib-2.0.pc', src=self.build_dir, dst='', keep_path=False)
 
         self.copy('%s.txt' % self.name, src=self.source_dir, dst='license')
