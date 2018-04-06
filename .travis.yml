@@ -44,3 +44,4 @@ install:
 script:
     - conan create . vuo/stable
       && conan upload --remote vuo --all --confirm glib/*
+    - cat /Users/travis/.conan/data/glib/2.51.1-4/vuo/stable/build/05e73570a1c6a8d339eda6b548143010444972b8/_build/config.log
