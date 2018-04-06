@@ -74,6 +74,7 @@ class GlibConan(ConanFile):
                 shutil.move('glib/.libs/libglib-2.0.0.dylib', 'glib/.libs/libglib.dylib')
                 self.run('install_name_tool -id @rpath/libglib.dylib glib/.libs/libglib.dylib')
             elif platform.system() == 'Linux':
+                self.run('ls -lR')
                 shutil.move('glib/.libs/libglib-2.0.0.so', 'glib/.libs/libglib.so')
                 patchelf = self.deps_cpp_info['patchelf'].rootpath + '/bin/patchelf'
                 self.run('%s --set-soname libglib.so glib/.libs/libglib.so' % patchelf)
