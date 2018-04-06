@@ -57,7 +57,7 @@ class GlibConan(ConanFile):
 
             if platform.system() == 'Darwin':
                 autotools.flags.append('-mmacosx-version-min=10.10')
-                autotools.flags.append('-isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk')
+                autotools.flags.append('-isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk')
                 autotools.link_flags.append('-Wl,-rpath,@loader_path')
                 autotools.link_flags.append('-Wl,-rpath,@loader_path/../..')
 
