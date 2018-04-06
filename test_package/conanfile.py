@@ -1,4 +1,5 @@
 from conans import ConanFile
+import platform
 
 class GlibTestConan(ConanFile):
     requires = 'llvm/3.3-5@vuo/stable'

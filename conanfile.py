@@ -1,6 +1,7 @@
 from conans import ConanFile, tools, AutoToolsBuildEnvironment
 import shutil
 import os
+import platform
 
 class GlibConan(ConanFile):
     name = 'glib'
@@ -10,7 +11,7 @@ class GlibConan(ConanFile):
     version = '%s-%s' % (source_version, package_version)
 
     build_requires = 'llvm/3.3-5@vuo/stable'
-    requires = 'libffi/3.0.11-3@vuo/stable', \
+    requires = 'libffi/3.0.12-3@vuo/stable', \
                'gettext/0.19.8.1-3@vuo/stable'
     settings = 'os', 'compiler', 'build_type', 'arch'
     url = 'https://github.com/vuo/conan-glib'
