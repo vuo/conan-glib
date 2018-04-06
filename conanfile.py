@@ -9,6 +9,7 @@ class GlibConan(ConanFile):
     package_version = '4'
     version = '%s-%s' % (source_version, package_version)
 
+    build_requires = 'llvm/3.3-5@vuo/stable'
     requires = 'libffi/3.0.11-2@vuo/stable', \
                'gettext/0.19.8.1-2@vuo/stable'
     settings = 'os', 'compiler', 'build_type', 'arch'
@@ -42,7 +43,11 @@ class GlibConan(ConanFile):
             autotools.link_flags.append('-Wl,-rpath,@loader_path')
             autotools.link_flags.append('-Wl,-rpath,@loader_path/../..')
 
-            env_vars = {'PKG_CONFIG_PATH': self.deps_cpp_info["libffi"].rootpath}
+            env_vars = {
+                'CC' : self.deps_cpp_info['llvm'].rootpath + '/bin/clang',
+                'CXX': self.deps_cpp_info['llvm'].rootpath + '/bin/clang++',
+                'PKG_CONFIG_PATH': self.deps_cpp_info["libffi"].rootpath,
+            }
             with tools.environment_append(env_vars):
                 autotools.configure(configure_dir='../%s' % self.source_dir,
                                     args=['--quiet',
