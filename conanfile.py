@@ -64,7 +64,7 @@ class GlibConan(ConanFile):
             }
             with tools.environment_append(env_vars):
                 autotools.configure(configure_dir='../%s' % self.source_dir,
-                                    args=['--quiet',
+                                    args=[#'--quiet',
                                           '--without-pcre',
                                           '--disable-fam',
                                           '--prefix=%s/%s' % (self.build_folder, self.build_dir)])
