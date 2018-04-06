@@ -1,0 +1,25 @@
+--- gio/gnextstepsettingsbackend.c.orig	2018-04-06 13:59:04.000000000 -0400
++++ gio/gnextstepsettingsbackend.c	2018-04-06 13:59:12.000000000 -0400
+@@ -23,6 +23,9 @@
+ #include "gsimplepermission.h"
+ #include "giomodule.h"
+ 
++#ifndef NS_RETURNS_INNER_POINTER
++#define NS_RETURNS_INNER_POINTER
++#endif
+ #import <Foundation/Foundation.h>
+ 
+ GType g_nextstep_settings_backend_get_type (void);
+--- gio/gcocoanotificationbackend.c.orig	2018-04-06 14:04:51.000000000 -0400
++++ gio/gcocoanotificationbackend.c	2018-04-06 14:05:09.000000000 -0400
+@@ -19,6 +19,9 @@
+ 
+ #include "config.h"
+ 
++#ifndef NS_RETURNS_INNER_POINTER
++#define NS_RETURNS_INNER_POINTER
++#endif
+ #import <Cocoa/Cocoa.h>
+ #include "gnotificationbackend.h"
+ #include "gapplication.h"
+
