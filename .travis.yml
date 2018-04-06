@@ -17,6 +17,7 @@ matrix:
                   packages:
                       - libc++-dev
                       - libc++abi-dev
+                      - libmount-dev
                       - qt59qbs
 
 before_install:
