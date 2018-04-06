@@ -24,6 +24,7 @@ before_install:
     - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
              brew update &> /dev/null
           && travis_wait brew install --force-bottle conan gettext qbs
+          && brew link --force gettext
           && conan config install https://vuo.org/sites/default/files/conan-macos.zip
       ; fi
     - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
@@ -44,4 +45,3 @@ install:
 script:
     - conan create . vuo/stable
       && conan upload --remote vuo --all --confirm glib/*
-    - cat /Users/travis/.conan/data/glib/2.51.1-4/vuo/stable/build/05e73570a1c6a8d339eda6b548143010444972b8/_build/config.log
