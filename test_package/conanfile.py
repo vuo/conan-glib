@@ -1,19 +1,24 @@
-from conans import ConanFile
+from conans import ConanFile, CMake
 import platform
 
 class GlibTestConan(ConanFile):
-    requires = 'llvm/3.3-5@vuo/stable'
-    generators = 'qbs'
+    generators = 'cmake'
+    requires = (
+        'llvm/5.0.2-1@vuo/stable',
+        'macos-sdk/11.0-0@vuo/stable',
+    )
 
     def build(self):
-        self.run('qbs -f "%s"' % self.source_folder)
+        cmake = CMake(self)
+        cmake.configure()
+        cmake.build()
 
     def imports(self):
         self.copy('*', src='bin', dst='bin')
         self.copy('*', src='lib', dst='lib')
 
     def test(self):
-        self.run('qbs run -f "%s"' % self.source_folder)
+        self.run('./bin/test_package')
 
         if platform.system() == 'Darwin':
             self.run('! (otool -L lib/libglib.dylib | tail +3 | egrep -v "^\s*(/usr/lib/|/System/|@rpath/)")')
